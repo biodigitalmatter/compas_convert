@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/_version.py"
+
+[tool.isort]
+profile = "black"
+force_single_line = true
+known_first_party = "compas_convert"
+known_third_party = "compas,Rhino"
+default_section = "THIRDPARTY"
+add_imports = "__future__.absolute_import,__future__.division,__future__.print_function"
+skip = "_version.py"
+
+[tool.black]
+target-version = ['py27']
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "2.7"
+show_error_codes = true
+
+[tool.pyright]
+include = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["compas.*", "Rhino.*"]
+ignore_missing_imports = true
