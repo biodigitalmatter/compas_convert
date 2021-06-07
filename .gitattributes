@@ -1,0 +1,10 @@
+*           text=auto
+
+*.py        eol=lf
+*.markdown  eol-lf
+*.yaml      eol=lf
+*.yml       eol=lf
+*.toml      eol=lf
+*.rst       eol=lf)
+
+*.ghx       eol=crlf

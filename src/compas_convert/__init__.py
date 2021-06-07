@@ -1,4 +1,30 @@
 """compas_convert."""
+import functools
+
+from compas.plugins import plugin_manager
+
+from .smart_converter import convert  # noqa: F401,F403
+
+try:
+    from collections.abc import Sequence
+except ImportError:
+    from collections import Sequence
+
+
+def is_typechecking():  # type: () -> bool
+    try:
+        import typing
+
+        return typing.TYPE_CHECKING
+    except ImportError:
+        return False
+
+
+TYPE_CHECKING = is_typechecking()  # type: bool
+
+if TYPE_CHECKING:
+    import typing
+plugin_manager.DEBUG = True
 
 
 def _get_version():  # type: () -> str
@@ -29,4 +55,23 @@ __author__ = "Anton Tetov Johansson"
 __license__ = "MIT License"
 __email__ = "anton@tetov.xyz"
 __version__ = _get_version()
-__all_plugins__ = ["compas_convert.rhino.install"]
+__all_plugins__ = ["compas_convert.install.rhino"]
+
+__all__ = ["TYPE_CHECKING"]
+
+
+def register_converter(
+    from_, to
+):  # type: (typing.Sequence[typing.Any], typing.Any) -> typing.Callable
+    def wrapped(fn):
+        @functools.wraps(fn)
+        def func(*args, **kwargs):
+            return fn(*args, **kwargs)
+
+        func.is_converter = True
+        func.from_ = from_ if isinstance(from_, Sequence) else [from_]
+        func.to = to
+
+        return func
+
+    return wrapped
