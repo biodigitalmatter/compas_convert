@@ -6,9 +6,7 @@ from __future__ import print_function
 import compas
 import compas.geometry as cg
 from compas.datastructures import Mesh as cgMesh
-
 from compas_ghpython.utilities import draw_mesh
-
 
 from compas_convert import register_converter
 
@@ -36,10 +34,7 @@ def point_to_rhino_point(pt):  # type: (compas.geometry.Point) -> rg.Point3d
 def vector_to_rhino_vector(
     v,
 ):  # type: (compas.geometry.Vector) -> rg.Vector3d
-    """Convert :class:`compas.geometry.Vector` to :class:`Rhino.Geometry.Vector3d`.
-
-    .
-    """
+    """Convert :class:`compas.geometry.Vector` to :class:`Rhino.Geometry.Vector3d`."""
     return rg.Vector3d(*v.data)
 
 

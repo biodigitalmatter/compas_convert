@@ -133,3 +133,5 @@ dmypy.json
 
 # setuptools_scm
 _version.py
+
+src/compas_convert/rhino/grasshopper_components/*.ghuser

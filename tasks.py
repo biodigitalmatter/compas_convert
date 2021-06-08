@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import contextlib
 import os
 import sys
 import tempfile
@@ -35,6 +36,13 @@ class Log(object):
 log = Log()
 
 
+@task(default=True)
+def help(ctx):
+    """Lists available tasks and usage."""
+    ctx.run("invoke --list")
+    log.write('Use "invoke -h <taskname>" to get detailed help for a task.')
+
+
 @task
 def clean(ctx):
     """Cleans the local copy from compiled artifacts."""
@@ -49,31 +57,29 @@ def clean(ctx):
         "check_links": "True to check all web links in docs for validity.",
     }
 )
-def docs(ctx, doctest=False, rebuild=False, check_links=False):
+def docs(ctx, clean=False, check_links=False):
     """Build package's HTML documentation."""
-    if rebuild:
+    if clean:
         clean(ctx)
 
     with chdir(REPO_DIR):
 
-        opts = "-E" if rebuild else ""
+        opts = "-E" if clean else ""
         ctx.run("sphinx-build {} -b html docs dist/docs".format(opts))
 
         if check_links:
-            linkcheck(ctx, rebuild=rebuild)
+            linkcheck(ctx)
 
 
 @task()
-def linkcheck(ctx, rebuild=False):
+def linkcheck(ctx):
     """Check links in documentation."""
     log.write("Running link check...")
-    opts = "-E" if rebuild else ""
-    ctx.run("sphinx-build {} -b linkcheck docs dist/docs".format(opts))
+    ctx.run("sphinx-build -b linkcheck docs dist/docs")
 
 
 @task(
     help={
-        "checks": "True to run all checks before testing, otherwise False.",
         "doctest": "True to run doctest on all modules, otherwise False.",
     }
 )
@@ -106,15 +112,23 @@ def prepare_changelog(ctx):
         )
 
 
+@task(
+    help={
+        "gh_io_folder": "Folder where GH_IO.dll is located. Defaults to the Rhino 6.0 installation folder (platform-specific).",  # noqa: E501
+        "ironpython": "Command for running the IronPython executable. Defaults to `ipy`.",  # noqa: E501
+    }
+)
 def build_ghuser_components(ctx, gh_io_folder=None, ironpython=None):
-    """Build Grasshopper user objects from source."""
-    with chdir(REPO_DIR):
+    """Build Grasshopper user objects from source"""
+    with chdir(dirname=REPO_DIR):
         with tempfile.TemporaryDirectory("actions.ghcomponentizer") as action_dir:
-            target_dir = source_dir = os.path.abspath("src/compas_ghpython/components")
-            repo_url = (
-                "https://github.com/compas-dev/compas-actions.ghpython_components.git "
+            target_dir = source_dir = os.path.abspath(
+                "src/compas_convert/rhino/grasshopper_components"
             )
-            ctx.run(f"git clone {repo_url} {action_dir}")
+            repo_url = (
+                "https://github.com/compas-dev/compas-actions.ghpython_components.git"
+            )
+            ctx.run("git clone {} {}".format(repo_url, action_dir))
             if not gh_io_folder:
                 import compas_ghpython
 
@@ -127,11 +141,17 @@ def build_ghuser_components(ctx, gh_io_folder=None, ironpython=None):
             componentizer_script = os.path.join(action_dir, "componentize.py")
 
             ctx.run(
-                f"{ironpython} {componentizer_script}"
-                + f'{source_dir} {target_dir} --ghio "{gh_io_folder}"'
+                '{} {} {} {} --ghio "{}"'.format(
+                    ironpython,
+                    componentizer_script,
+                    source_dir,
+                    target_dir,
+                    gh_io_folder,
+                )
             )
 
 
+@contextlib.contextmanager
 def chdir(dirname=None):
     current_dir = os.getcwd()
     try:

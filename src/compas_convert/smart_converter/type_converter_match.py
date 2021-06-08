@@ -1,9 +1,13 @@
-from compas_convert import TYPE_CHECKING
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-if TYPE_CHECKING:
+try:
     from typing import Any
     from typing import Optional
     from typing import Tuple
+except ImportError:
+    pass
 
 
 class TypeConverterMatch(object):

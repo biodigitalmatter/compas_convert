@@ -1,26 +1,24 @@
 """Conversions from Rhino.Geometry objects."""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import compas
 import compas.geometry as cg
 from compas.datastructures import Mesh as cgMesh
 from compas_rhino.geometry import RhinoMesh
 
 from compas_convert import register_converter
 
-from compas_convert import TYPE_CHECKING
-
-if TYPE_CHECKING:
+try:
     from typing import List
+except ImportError:
+    pass
 
 
 try:
     import Rhino.Geometry as rg
 except ImportError:
-    compas.raise_if_ironpython()
+    pass
 
 RHINO_POINT_CLASSES = [
     rg.Point3d,

@@ -15,20 +15,13 @@ try:
 except ImportError:
     from collections import Sequence
 
+try:
+    from typing import Any
+    from typing import Callable
+    from typing import Sequence as SequenceType
+except ImportError:
+    pass
 
-def is_typechecking():  # type: () -> bool
-    try:
-        import typing
-
-        return typing.TYPE_CHECKING
-    except ImportError:
-        return False
-
-
-TYPE_CHECKING = is_typechecking()  # type: bool
-
-if TYPE_CHECKING:
-    import typing
 plugin_manager.DEBUG = True
 
 
@@ -66,9 +59,7 @@ PKG_DIR = os.path.dirname(__file__)  # type: str
 """Path to the location of the package."""
 
 
-def register_converter(
-    from_, to
-):  # type: (typing.Sequence[typing.Any], typing.Any) -> typing.Callable
+def register_converter(from_, to):  # type: (SequenceType[Any], Any) -> Callable
     def wrapped(fn):
         @functools.wraps(fn)
         def func(*args, **kwargs):

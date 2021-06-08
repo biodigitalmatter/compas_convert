@@ -1,0 +1,27 @@
+{
+  "name": "Universal object converter",
+  "nickname": "CONVERT",
+  "category": "COMPAS",
+  "subcategory": "Convert",
+  "description": "Convert compas object to Rhino object, or vice versa.",
+  "exposure": 2,
+
+  "ghpython": {
+    "isAdvancedMode": true,
+    "inputParameters": [
+      {
+        "name": "input",
+        "description": "Input object.",
+        "typeHintID": "none",
+        "showTypeHints": false
+      }
+    ],
+    "outputParameters": [
+      {
+        "name": "output",
+        "description": "Output object.",
+        "optional": false
+      }
+    ]
+  }
+}
