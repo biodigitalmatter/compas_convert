@@ -3,8 +3,11 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
-      - id: trailing-whitespace
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
       - id: end-of-file-fixer
+      - id: trailing-whitespace
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.8.0
     hooks:
