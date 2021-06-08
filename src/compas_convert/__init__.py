@@ -1,5 +1,10 @@
 """compas_convert."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import functools
+import os
 
 from compas.plugins import plugin_manager
 
@@ -57,7 +62,8 @@ __email__ = "anton@tetov.xyz"
 __version__ = _get_version()
 __all_plugins__ = ["compas_convert.install.rhino"]
 
-__all__ = ["TYPE_CHECKING"]
+PKG_DIR = os.path.dirname(__file__)  # type: str
+"""Path to the location of the package."""
 
 
 def register_converter(
