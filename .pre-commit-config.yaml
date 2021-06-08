@@ -26,3 +26,12 @@ repos:
     rev: "v0.812"
     hooks:
       - id: mypy
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.5.0
+    hooks:
+      - id: reorder-python-imports
+        args: [
+          "--add-import", "from __future__ import absolute_import",
+          "--add-import", "from __future__ import division",
+          "--add-import", "from __future__ import print_function",
+        ]
