@@ -1,11 +1,15 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import compas.geometry as cg
+from compas import RHINO
+
 from compas_convert.rhino import frame_to_rhino_plane
 from compas_convert.rhino import line_to_rhino_line
+from compas_convert.rhino import matrix_to_rhino_transform
 from compas_convert.rhino import point_to_rhino_point
 from compas_convert.rhino import vector_to_rhino_vector
-from compas_convert.rhino import matrix_to_rhino_transform
-
-from compas import RHINO
-import compas.geometry as cg
 
 if RHINO:
     import Rhino.Geometry as rg  # type: ignore

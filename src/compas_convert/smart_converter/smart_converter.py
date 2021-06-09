@@ -1,4 +1,9 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import pkgutil
+
 import compas_convert
 from compas_convert.smart_converter.type_converter_match import TypeConverterMatch
 

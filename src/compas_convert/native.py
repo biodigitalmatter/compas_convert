@@ -1,6 +1,10 @@
-from compas_convert import register_converter
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import compas.data
+
+from compas_convert import register_converter
 
 
 @register_converter(from_=[str], to=[compas.data.Data])
