@@ -129,20 +129,19 @@ def test(ctx, doctest=False):
 @task
 def prepare_changelog(ctx):
     """Prepare changelog for next release."""
-    UNRELEASED_CHANGELOG_TEMPLATE = (
+    unreleased_changelog_template = (
         "## Unreleased\n\n### Added\n\n### Changed\n\n### Removed\n\n\n## "
     )
+    commit_msg = "[skip ci] Prepare changelog for next release"
 
     with chdir(REPO_DIR):
         # Preparing changelog for next release
         with open("CHANGELOG.md", "r+") as changelog:
             content = changelog.read()
             changelog.seek(0)
-            changelog.write(content.replace("## ", UNRELEASED_CHANGELOG_TEMPLATE, 1))
+            changelog.write(content.replace("## ", unreleased_changelog_template, 1))
 
-        ctx.run(
-            'git add CHANGELOG.md && git commit -m "Prepare changelog for next release"'
-        )
+        ctx.run('git add CHANGELOG.md && git commit -m "{}"'.format(commit_msg))
 
 
 @task(
