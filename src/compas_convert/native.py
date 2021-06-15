@@ -7,7 +7,7 @@ import compas.data
 from compas_convert import register_converter
 
 
-@register_converter(from_=[str], to=[compas.data.Data])
+@register_converter([str], compas.data.Data)
 def json_str_to_compas_obj(json_str):  # type: (str) -> compas.data.Data
     """Convert JSON string to object based on :class:`compas.data.Data`."""
     return compas.data.json_loads(json_str)

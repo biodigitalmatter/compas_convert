@@ -11,10 +11,10 @@ except ImportError:
 
 
 class TypeConverterMatch(object):
-    def __init__(self, func, from_=None, to=None):
+    def __init__(self, func, input_type=None, output_type=None):
         self.func = func
-        self.from_ = self.ensure_type_obj(from_)
-        self.to = self.ensure_type_obj(to)
+        self.input_type = self.ensure_type_obj(input_type)
+        self.output_type = self.ensure_type_obj(output_type)
 
     def __lt__(self, other):
         return self.value < other.value
@@ -24,8 +24,8 @@ class TypeConverterMatch(object):
 
     def __repr__(self):
         string = "TypeConverterMatch(Function: {},".format(self.func)
-        string += "from_type: {}, to_type: {}, is_match: {}, value: {}".format(
-            self.from_, self.to, self.is_match(), self.value
+        string += "input_type: {}, output_type: {}, is_match: {}, value: {}".format(
+            self.input_type, self.output_type, self.is_match(), self.value
         )
 
         return string
@@ -39,24 +39,24 @@ class TypeConverterMatch(object):
 
     @property
     def value(self):  # type: ()  -> Tuple[int, bool]
-        return (self._get_from_score(), self._get_to_score())
+        return (self._get_input_score(), self._get_output_score())
 
-    def _get_from_score(self):  # type: () -> int
+    def _get_input_score(self):  # type: () -> int
         try:
-            return self.func.from_.index(self.from_) + 1
+            return self.func.input_types.index(self.input_type) + 1
         except ValueError:
             return 0
 
-    def _get_to_score(self):  # type: () -> bool
-        return self.to == self.func.to
+    def _get_output_score(self):  # type: () -> bool
+        return self.output_type == self.func.output_type
 
     def is_match(self):  # type: () -> bool
-        return self.is_from_type_match() and self.is_to_type_match()
+        return self.is_input_type_match() and self.is_output_type_match()
 
-    def is_from_type_match(self):  # type: () -> bool
+    def is_input_type_match(self):  # type: () -> bool
         return self.value[0] > 0
 
-    def is_to_type_match(self):  # type: () -> bool
+    def is_output_type_match(self):  # type: () -> bool
         return self.value[1]
 
     @staticmethod

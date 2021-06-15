@@ -59,15 +59,19 @@ PKG_DIR = os.path.dirname(__file__)  # type: str
 """Path to the location of the package."""
 
 
-def register_converter(from_, to):  # type: (SequenceType[Any], Any) -> Callable
+def register_converter(
+    input_types, output_type
+):  # type: (SequenceType[Any], Any) -> Callable
     def wrapped(fn):
         @functools.wraps(fn)
         def func(*args, **kwargs):
             return fn(*args, **kwargs)
 
         func.is_converter = True
-        func.from_ = from_ if isinstance(from_, Sequence) else [from_]
-        func.to = to
+        func.input_types = (
+            input_types if isinstance(input_types, Sequence) else [input_types]
+        )
+        func.output_type = output_type
 
         return func
 

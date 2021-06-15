@@ -1,4 +1,3 @@
-"""Most of these are in compas >=0.15 but compas_fab is not there yet."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -23,10 +22,7 @@ except ImportError:
 
 @register_converter([cg.Point, cg.Vector], rg.Point3d)
 def point_to_rhino_point(pt):  # type: (compas.geometry.Point) -> rg.Point3d
-    """Convert :class:`compas.geometry.Point` to :class:`Rhino.Geometry.Point3d`.
-
-    .
-    """
+    """Convert :class:`compas.geometry.Point` to :class:`Rhino.Geometry.Point3d`."""
     return rg.Point3d(*pt.data)
 
 

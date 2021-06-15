@@ -11,7 +11,7 @@ from compas_convert.smart_converter.type_converter_match import TypeConverterMat
 class SmartConverter(object):
     def __init__(self):
         self._converters = None
-        self._from_type_converter_mapping = None
+        self._input_type_to_converters_dict = None
 
     def __str__(self):
         string = "SmartConverter("
@@ -33,31 +33,35 @@ class SmartConverter(object):
         return self._converters
 
     @property
-    def from_type_converter_mapping(self):
-        if not self._from_type_converter_mapping:
-            self._create_from_converter_mapping()
+    def input_type_to_converters_dict(self):
+        if not self._input_type_to_converters_dict:
+            self._create_input_type_to_converters_dict()
 
-        return self._from_type_converter_mapping
+        return self._input_type_to_converters_dict
 
-    def convert(self, obj, from_type=None, to_type=None):
+    def convert(self, obj, input_type_override=None, output_type_override=None):
         """."""
-        _from = from_type or type(obj)
+        input_type = input_type_override or type(obj)
 
         # Get converters for exact type match
-        compat_converters = self.from_type_converter_mapping.get(_from) or []
+        compat_converters = self.input_type_to_converters_dict.get(input_type) or []
 
         # Get converters where input parent matches
-        for type_key, converters in self.from_type_converter_mapping.items():
-            if issubclass(_from, type_key):
+        for type_key, converters in self.input_type_to_converters_dict.items():
+            if issubclass(input_type, type_key):
                 compat_converters += converters
 
         try:
 
-            if to_type:
+            if output_type_override:
                 # raises StopIteration if none of the applicable converters
                 # has specified to type as output
                 converter = next(
-                    (conv for conv in compat_converters if conv.to == to_type)
+                    (
+                        conv
+                        for conv in compat_converters
+                        if conv.output_type == output_type_override
+                    )
                 )
             else:
                 # raises IndexError if applicable converters are zero
@@ -66,7 +70,7 @@ class SmartConverter(object):
             raise RuntimeError(
                 "Could not convert object of type {} ".format(type(obj))
                 + "(constraint input: {}, constraint output: {})".format(
-                    from_type, to_type
+                    input_type_override, output_type_override
                 )
             )
 
@@ -102,31 +106,33 @@ class SmartConverter(object):
                     if getattr(obj, "is_converter", False):
                         self._converters.append(obj)
 
-    def _create_from_converter_mapping(self):
-        def yield_available_from_types():
+    def _create_input_type_to_converters_dict(self):
+        def yield_available_input_types():
             for conv in self.converters:
-                for from_type in conv.from_:
-                    yield from_type
+                for input_type in conv.input_types:
+                    yield input_type
 
-        self._from_type_converter_mapping = {}
+        self._input_type_to_converters_dict = {}
 
-        for type_ in yield_available_from_types():
+        for type_ in yield_available_input_types():
             # Check that is that is hasn't already been added
-            if type_ not in self._from_type_converter_mapping.keys():
-                matches = [TypeConverterMatch(c, from_=type_) for c in self.converters]
+            if type_ not in self._input_type_to_converters_dict.keys():
+                matches = [
+                    TypeConverterMatch(c, input_type=type_) for c in self.converters
+                ]
                 valid_matches = [
-                    match for match in matches if match.is_from_type_match()
+                    match for match in matches if match.is_input_type_match()
                 ]
                 valid_matches.sort(reverse=True)
 
-                self._from_type_converter_mapping[type_] = [
+                self._input_type_to_converters_dict[type_] = [
                     match.func for match in valid_matches
                 ]
 
     def _print_input_type_converter_mapping(self):
         string = ""
 
-        for key, value in self.from_type_converter_mapping.items():
+        for key, value in self.input_type_to_converters_dict.items():
             string += "{}: {}\n".format(key, ",\n\t".join([str(c) for c in value]))
 
         print(string)
@@ -136,7 +142,10 @@ class SmartConverter(object):
 SMART_CONVERTER = SmartConverter()
 
 
-def convert(obj, from_=None, to=None):
-    # print(SMART_CONVERTER)
-    # print(SMART_CONVERTER._print_input_type_converter_mapping())
-    return SMART_CONVERTER.convert(obj, from_type=from_, to_type=to)
+def convert(obj, input_type_override=None, output_type_override=None):
+    """Convert CAD native object to COMPAS object, or vice versa."""
+    return SMART_CONVERTER.convert(
+        obj,
+        input_type_override=input_type_override,
+        output_type_override=output_type_override,
+    )
