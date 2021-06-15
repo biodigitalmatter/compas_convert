@@ -1,0 +1,112 @@
+name: Test, build, publish docs and release
+
+on:
+  push:
+    tags:
+      - v*
+    branches-ignore:
+      - "gh-pages"
+
+jobs:
+  build-and-test:
+    name: Install, test, build package and build docs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.7, 3.8, 3.9]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2.3.4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install wheel  # https://stackoverflow.com/questions/34819221
+          python -m pip install cython --install-option='--no-cython-compile'
+          python -m pip install --no-cache-dir -e .[dev]
+
+      - name: Test import
+        run: python -m compas_convert
+
+      - name: Test
+        run: invoke test
+
+      - name: Build docs
+        run: invoke docs
+
+      - name: Build package
+        run: invoke build
+
+  publish:
+    name: Publish package
+    needs: build-and-test
+    if: startsWith( github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    steps:
+      - name: Get version from tag
+        id: tag_name
+        run: |
+          echo ::set-output name=current_version::${GITHUB_REF#refs/tags/v}
+        shell: bash
+
+      - name: Checkout repo
+        uses: actions/checkout@v2.3.4
+
+      - name: Get Changelog Entry
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ steps.tag_name.outputs.current_version }}
+          path: ./CHANGELOG.md
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install
+        run: |
+          pip install --upgrade pip
+          pip install wheel  # https://stackoverflow.com/questions/34819221
+          pip install cython --install-option='--no-cython-compile'
+          python -m pip install --no-cache-dir -e .[dev]
+
+      # Need IPY for compas-actions.ghpython_components
+      - uses: NuGet/setup-nuget@v1.0.5
+      - name: Install IronPython
+        run: |
+          choco install ironpython --version=2.7.8.1
+
+      - name: 🦗 Build grasshopper components
+        uses: compas-dev/compas-actions.ghpython_components@v1
+        with:
+          source: src/rhino/grasshopper_components
+          target: src/rhino/grasshopper_components/ghuser
+
+      - name: Build package
+        run: invoke build
+
+      - name: Upload and release package on PyPi
+        uses: pypa/gh-action-pypi-publish@v1.4.2
+        if: env.RELEASE
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+
+      - name: Create GitHub release and upload assets
+        if: env.RELEASE
+        uses: softprops/action-gh-release@91409e712cf565ce9eff10c87a8d1b11b81757ae
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            dist/*.whl
+            dist/*.tar.gz

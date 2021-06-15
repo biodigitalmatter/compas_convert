@@ -8,6 +8,7 @@ import sys
 import tempfile
 
 from invoke import task
+from invoke.exceptions import UnexpectedExit
 
 REPO_DIR = os.path.dirname(__file__)
 
@@ -38,17 +39,22 @@ log = Log()
 
 @task(default=True)
 def help(ctx):
-    """Lists available tasks and usage."""
+    """List available tasks and usage."""
     ctx.run("invoke --list")
     log.write('Use "invoke -h <taskname>" to get detailed help for a task.')
 
 
 @task
-def clean(ctx):
+def clean(ctx, interactive=True):
     """Cleans the local copy from compiled artifacts."""
 
+    cmd = "git clean -x"
+
+    if interactive:
+        cmd += " --interactive"
+
     with chdir(REPO_DIR):
-        ctx.run("git clean --interactive -x")
+        ctx.run(cmd)
 
 
 @task(
@@ -59,16 +65,43 @@ def clean(ctx):
 )
 def docs(ctx, clean=False, check_links=False):
     """Build package's HTML documentation."""
-    if clean:
-        clean(ctx)
+    pass  # not implemented yet
+    # if clean:
+    #     clean(ctx)
 
+    # with chdir(REPO_DIR):
+
+    #     opts = "-E" if clean else ""
+    #     ctx.run("sphinx-build {} -b html docs dist/docs".format(opts))
+
+    #     if check_links:
+    #         linkcheck(ctx)
+
+
+@task()
+def check(ctx):
+    """Check the consistency of documentation, coding style and a few other things."""
     with chdir(REPO_DIR):
+        log.write("Pep517 check")
+        ctx.run("python -m pep517.check .")
 
-        opts = "-E" if clean else ""
-        ctx.run("sphinx-build {} -b html docs dist/docs".format(opts))
+        log.write("Running all pre-commit hooks on whole repository.")
+        ctx.run("pre-commit run --all-files")
 
-        if check_links:
-            linkcheck(ctx)
+
+@task
+def build(ctx):
+    """Build project."""
+    ctx.run("python -m build")
+
+
+@task
+def raise_if_dirty(ctx):
+    """Raise if there's modified or untracked files in repository."""
+    try:
+        ctx.run('test -z "$(git status --porcelain)"')
+    except UnexpectedExit:
+        raise Exception("Working directory contains changes or untracked files.")
 
 
 @task()
@@ -149,6 +182,18 @@ def build_ghuser_components(ctx, gh_io_folder=None, ironpython=None):
                     gh_io_folder,
                 )
             )
+
+
+@task(
+    pre=[raise_if_dirty, check, test, build, docs, build_ghuser_components],
+    help={"new_version": "Version number to release"},
+)
+def release(ctx, new_version):
+    """Releases the project in one swift command."""
+    # Bump version and git tag it
+    ctx.run("git -s tag {}".format(new_version))
+
+    prepare_changelog(ctx)
 
 
 @contextlib.contextmanager
