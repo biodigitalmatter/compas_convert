@@ -1,0 +1,118 @@
+digraph G {
+
+    rankdir=LR;
+    splines=line;
+    ranksep="1.5 equally";
+    node [shape=plaintext];
+    label="Object conversions between COMPAS and Rhino.Geometry";
+    labelloc = "t";
+
+    subgraph compas {
+        rank=same;
+        cBezier [label="Bezier"]
+        cBox [label="Box"]
+        cCapsule [label="Capsule"]
+        cCircle [label="Circle"]
+        cCone [label="Cone"]
+        cCylinder [label="Cylinder"]
+        cEllipse [label="Ellipse"]
+        cFrame [label="Frame"]
+        cLine [label="Line"]
+        cMesh [label="Mesh"]
+        cPlane [label="Plane"]
+        cPoint [label="Point"]
+        cPointcloud [label="Pointcloud"]
+        cPolygon [label="Polygon"]
+        cPolyhedron [label="Polyhedron"]
+        cPolyline [label="Polyline"]
+        cProjection  [label="Projection"]
+        cQuaternion[label="Quaternion"]
+        cReflection  [label="Reflection"]
+        cRotation  [label="Rotation"]
+        cScale  [label="Scale"]
+        cShear  [label="Shear"]
+        cSphere [label="Sphere"]
+        cTorus  [label="Torus"]
+        cTransformation  [label="Transformation"]
+        cTranslation  [label="Translation"]
+        cVector[label="Vector"];
+
+	}
+
+	subgraph rhino {
+	    rank=same
+
+        rBox [label="Box "]
+        rBrep [label="Brep "]
+        rCircle [label="Circle" ]
+        rCone [label="Cone "]
+        rCurve [label="Curve "]
+        rCylinder [label="Cylinder" ]
+        rLine [label="Line "]
+        rMesh [label="Mesh "]
+        rPlane [label="Plane "]
+        rPointCloud [label="PointCloud "]
+        rPoints [label="Rhino Points "]
+        rPolyline [label="Polyline "]
+        rQuaternion [label="Quaternion" ]
+        rSphere [label="Sphere"]
+        rSurface [label="Surface"]
+        rTorus[label="Torus"]
+        rTransform [label="Transform"]
+        rVectors [label="Rhino Vectors"];
+        label=Rhino;
+	}
+	subgraph rhino_sub {
+	    label = "Rhino subclasses"
+	    rank=same
+        rPoint2d [label="Point2d"]
+        rPoint2f [label="Point2f"]
+        rPoint3d [label="Point3d"]
+        rPoint3f [label="Point3f"]
+        rPoint4d [label="Point4d"]
+        rVector2d [label="Vector2d"]
+        rVector2f [label="Vector2f"]
+        rVector3d [label="Vector3d"]
+        rVector3f [label="Vector3f"];
+
+	}
+    subgraph rhino_sub_edges {
+        edge [dir=none]
+       rPoints -> {rPoint2d, rPoint2f, rPoint3d, rPoint3f, rPoint4d}
+       rVectors -> {rVector2d, rVector2f, rVector3d, rVector3f}
+    }
+
+    subgraph planned_conversions {
+        edge [style=dotted, dir=both]
+        cQuaternion -> rQuaternion;
+        cEllipse -> rCurve;
+        cCylinder -> rCylinder;
+        cPointcloud -> rPointCloud;
+        cBezier -> rCurve;
+        cPolyline -> { rPolyline, rCurve};
+        cCone -> rCone;
+        rBrep -> {cCapsule, cPolyhedron}
+        cRotation -> rQuaternion;
+        cQuaternion -> rTransform;
+        cCircle -> rCurve;
+        cLine -> {rPolyline, rCurve};
+        cPolygon -> rSurface;
+        cTorus -> rTorus;
+        cSphere -> rSphere;
+
+    }
+
+    subgraph existing_conversions {
+        edge [dir=both]
+        cPoint -> {rPoints, rVectors};
+        cVector -> {rVectors, rPoints};
+        rPlane -> {cPlane, cFrame}
+        cLine -> rLine;
+        cCircle -> rCircle ;
+        cMesh ->rMesh;
+        cBox -> rBox
+        rTransform -> {cTransformation, cProjection, cReflection, cRotation, cScale, cShear, cTranslation};
+
+    }
+
+}
