@@ -127,7 +127,6 @@ jobs:
 
       - name: Upload and release package on PyPi
         uses: pypa/gh-action-pypi-publish@v1.4.2
-        if: env.RELEASE
         with:
           user: __token__
           password: ${{ secrets.pypi_password }}
@@ -141,3 +140,6 @@ jobs:
           files: |
             dist/*.whl
             dist/*.tar.gz
+          body: ${{ steps.changelog_reader.outputs.changes }}
+          prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
+          draft: ${{ steps.changelog_reader.outputs.status == 'unreleased' }}
