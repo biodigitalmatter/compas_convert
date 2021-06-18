@@ -1,0 +1,4 @@
+global-exclude *.psd *.ghx
+exclude .*
+recursive-include **/ghuser *.ghuser
+prune .github
