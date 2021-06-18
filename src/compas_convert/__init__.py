@@ -6,9 +6,7 @@ from __future__ import print_function
 import functools
 import os
 
-from compas.plugins import plugin_manager
-
-from .smart_converter import convert  # noqa: F401,F403
+from .universal_converter import convert  # noqa: F401,F403
 
 try:
     from collections.abc import Sequence
@@ -21,8 +19,6 @@ try:
     from typing import Sequence as SequenceType
 except ImportError:
     pass
-
-plugin_manager.DEBUG = True
 
 
 def _get_version():  # type: () -> str

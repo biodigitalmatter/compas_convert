@@ -5,10 +5,10 @@ from __future__ import print_function
 import pkgutil
 
 import compas_convert
-from compas_convert.smart_converter.type_converter_match import TypeConverterMatch
+from compas_convert.universal_converter.type_converter_match import TypeConverterMatch
 
 
-class SmartConverter(object):
+class UniversalConverter(object):
     def __init__(self):
         self._converters = None
         self._input_type_to_converters_dict = None
@@ -139,13 +139,11 @@ class SmartConverter(object):
 
 
 # Everything is loaded lazily so this shouldn't cost anything
-SMART_CONVERTER = SmartConverter()
+UNIVERSAL_CONVERTER = UniversalConverter()
 
 
-def convert(obj, input_type_override=None, output_type_override=None):
+def convert(obj, input_type_override=None, output_type=None):
     """Convert CAD native object to COMPAS object, or vice versa."""
-    return SMART_CONVERTER.convert(
-        obj,
-        input_type_override=input_type_override,
-        output_type_override=output_type_override,
+    return UNIVERSAL_CONVERTER.convert(
+        obj, input_type_override=input_type_override, output_type_override=output_type
     )

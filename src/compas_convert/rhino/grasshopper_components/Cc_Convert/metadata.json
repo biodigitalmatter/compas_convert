@@ -1,9 +1,9 @@
 {
-  "name": "Universal object converter",
-  "nickname": "CONVERT",
+  "name": "Universal COMPAS converter",
+  "nickname": "Cc_Convert",
   "category": "COMPAS",
-  "subcategory": "Convert",
-  "description": "Convert compas object to Rhino object, or vice versa.",
+  "subcategory": "Extensions",
+  "description": "Convert compas objects to Rhino objects, or vice versa.",
   "exposure": 2,
 
   "ghpython": {

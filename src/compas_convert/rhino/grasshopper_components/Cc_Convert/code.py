@@ -1,6 +1,6 @@
 """
 Convert compas object to Rhino object.
-compas_convert 0.1.2
+compas_convert 0.1.3
 """
 from __future__ import absolute_import
 from __future__ import division
