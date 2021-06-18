@@ -45,7 +45,7 @@ jobs:
       - name: Build package
         run: invoke build
 
-  test-build-ghusercomponents:
+  build-ghusercomponents:
     name: Test building ghuser components
     needs: build-and-test
     runs-on: windows-latest
@@ -78,8 +78,10 @@ jobs:
 
   publish:
     name: Publish package
-    needs: build-and-test
     if: startsWith( github.ref, 'refs/tags/v')
+    needs:
+      - build-and-test
+      - build-ghusercomponents
     runs-on: windows-latest
     steps:
       - name: Get version from tag
@@ -125,14 +127,7 @@ jobs:
       - name: Build package
         run: invoke build
 
-      - name: Upload and release package on PyPi
-        uses: pypa/gh-action-pypi-publish@v1.4.2
-        with:
-          user: __token__
-          password: ${{ secrets.pypi_password }}
-
       - name: Create GitHub release and upload assets
-        if: env.RELEASE
         uses: softprops/action-gh-release@91409e712cf565ce9eff10c87a8d1b11b81757ae
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -143,3 +138,9 @@ jobs:
           body: ${{ steps.changelog_reader.outputs.changes }}
           prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
           draft: ${{ steps.changelog_reader.outputs.status == 'unreleased' }}
+
+      - name: Upload and release package on PyPi
+        uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}

@@ -11,7 +11,7 @@ from compas_ghpython.components import uninstall_userobjects
 
 from compas_convert import PKG_DIR
 
-GH_COMPONENTS_DIR = os.path.join(PKG_DIR, "rhino", "grasshopper_components")
+GH_COMPONENTS_DIR = os.path.join(PKG_DIR, "rhino", "grasshopper_components", "ghuser")
 
 
 @compas.plugins.plugin(category="install")

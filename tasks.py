@@ -48,12 +48,12 @@ def help(ctx):
 def clean(ctx, interactive=True):
     """Cleans the local copy from compiled artifacts."""
 
-    cmd = "git clean -x"
+    cmd = "git clean -xd"
 
     if interactive:
         cmd += " --interactive"
 
-    with chdir(REPO_DIR):
+    with chdir(REPO_DIR):  # change dir to show paths relative to repo root
         ctx.run(cmd)
 
 
@@ -82,9 +82,6 @@ def docs(ctx, clean=False, check_links=False):
 def check(ctx):
     """Check the consistency of documentation, coding style and a few other things."""
     with chdir(REPO_DIR):
-        log.write("Pep517 check")
-        ctx.run("python -m pep517.check .")
-
         log.write("Running all pre-commit hooks on whole repository.")
         ctx.run("pre-commit run --all-files")
 
@@ -92,7 +89,8 @@ def check(ctx):
 @task
 def build(ctx):
     """Build project."""
-    ctx.run("python -m build")
+    with chdir(REPO_DIR):
+        ctx.run("python -m build")
 
 
 @task
@@ -107,8 +105,9 @@ def raise_if_dirty(ctx):
 @task()
 def linkcheck(ctx):
     """Check links in documentation."""
-    log.write("Running link check...")
-    ctx.run("sphinx-build -b linkcheck docs dist/docs")
+    with chdir(REPO_DIR):
+        log.write("Running link check...")
+        ctx.run("sphinx-build -b linkcheck docs dist/docs")
 
 
 @task(
@@ -154,9 +153,10 @@ def build_ghuser_components(ctx, gh_io_folder=None, ironpython=None):
     """Build Grasshopper user objects from source"""
     with chdir(dirname=REPO_DIR):
         with tempfile.TemporaryDirectory("actions.ghcomponentizer") as action_dir:
-            target_dir = source_dir = os.path.abspath(
+            source_dir = os.path.abspath(
                 "src/compas_convert/rhino/grasshopper_components"
             )
+            target_dir = os.path.join(source_dir, "ghuser")
             repo_url = (
                 "https://github.com/compas-dev/compas-actions.ghpython_components.git"
             )
@@ -184,15 +184,14 @@ def build_ghuser_components(ctx, gh_io_folder=None, ironpython=None):
 
 
 @task(
-    pre=[raise_if_dirty, check, test, build, docs, build_ghuser_components],
+    pre=[raise_if_dirty, clean, check, test, build, docs, build_ghuser_components],
     help={"new_version": "Version number to release"},
+    post=[prepare_changelog],
 )
 def release(ctx, new_version):
     """Releases the project in one swift command."""
     # Bump version and git tag it
     ctx.run("git -s tag {}".format(new_version))
-
-    prepare_changelog(ctx)
 
 
 @contextlib.contextmanager
