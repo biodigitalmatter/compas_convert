@@ -2,8 +2,6 @@
 
 Conversions of [COMPAS](https://compas.dev) geometry objects to CAD specific objects.
 
-![Conversions](./docs/conversion_diagram.svg)
-
 ## Supported CAD environments
 
 * [Rhino/Grasshopper](https://www.rhino3d.com/)
@@ -48,3 +46,7 @@ This metadata is used by the function `compas_convert.convert` which on its
 first use maps types and converters and uses that mapping to convert object
 without the need to specify either input type or output type. Input type or
 output type can however be specified to override the default.
+
+## Conversion diagrams
+
+![Conversions](./docs/conversion_diagram.svg)
