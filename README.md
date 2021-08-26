@@ -1,5 +1,10 @@
 # compas_convert
 
+![Build and test](https://github.com/biodigitalmatter/compas_convert/actions/workflows/test-build-docs-release.yaml/badge.svg)
+[![PyPI Package latest release](https://img.shields.io/pypi/v/compas-convert.svg)](https://pypi.org/project/compas-convert)
+[![Conda](https://img.shields.io/conda/v/conda-forge/compas_convert)](https://anaconda.org/conda-forge/compas_convert)
+![License](https://img.shields.io/github/license/biodigitalmatter/compas_convert)
+
 Conversions of [COMPAS](https://compas.dev) geometry objects to CAD specific objects.
 
 ## Supported CAD environments
