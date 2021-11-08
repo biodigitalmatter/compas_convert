@@ -139,8 +139,10 @@ jobs:
           prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
           draft: ${{ steps.changelog_reader.outputs.status == 'unreleased' }}
 
-      - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
-        with:
-          user: __token__
-          password: ${{ secrets.pypi_password }}
+      - name: 📦 Publish release to PyPI
+        run: |
+            twine check dist/*
+            twine upload dist/* --skip-existing
+        env:
+            TWINE_USERNAME: __token__
+            TWINE_PASSWORD: ${{ secrets.pypi_password }}
