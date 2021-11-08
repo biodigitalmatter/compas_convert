@@ -141,8 +141,9 @@ jobs:
 
       - name: 📦 Publish release to PyPI
         run: |
-            twine check dist/*
-            twine upload dist/* --skip-existing
+          pip install twine
+          twine check dist/*
+          twine upload dist/* --skip-existing
         env:
-            TWINE_USERNAME: __token__
-            TWINE_PASSWORD: ${{ secrets.pypi_password }}
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.pypi_password }}
