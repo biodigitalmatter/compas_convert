@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD024 -->
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -5,28 +7,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
-
-### Added
+## [0.1.4] 2021-11-08
 
 ### Changed
 
-### Removed
-
+- compas bumped to `<1.11`.
 
 ## [0.1.3] 2021-06-18
 
 ### Added
 
-* Grasshopper component for universal converter.
+- Grasshopper component for universal converter.
 
 ### Changed
 
-* `SmartConverter` renamed to `UniversalConverter`.
+- `SmartConverter` renamed to `UniversalConverter`.
 
 ## [0.1.2] 2021-06-14
 
 ### Added
 
-* Universal converter (SmartConverter) added which converts input object based
+- Universal converter (SmartConverter) added which converts input object based
   on type.
