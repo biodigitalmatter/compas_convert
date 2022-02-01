@@ -1,4 +1,12 @@
-# compas_convert
+# DEVELOPMENT DISCONTIUED
+
+Conversion functions are now available upstream in
+[compas_rhino.conversions](https://compas.dev/compas/1.13.3/api/compas_rhino.conversions.html)
+since version 1.11.
+
+There's no universal converter, that might become an upstreams PR in the future.
+
+## compas_convert
 
 ![Build and test](https://github.com/biodigitalmatter/compas_convert/actions/workflows/test-build-docs-release.yaml/badge.svg)
 [![PyPI Package latest release](https://img.shields.io/pypi/v/compas-convert.svg)](https://pypi.org/project/compas-convert)
